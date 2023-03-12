@@ -3,6 +3,7 @@ name: Release
 env:
   MIN_SUPPORTED_RUST_VERSION: "1.62.0"
   CICD_INTERMEDIATES_DIR: "_cicd-intermediates"
+  TAG_NAME: "release"
 
 on:
   workflow_dispatch:
@@ -512,8 +513,9 @@ jobs:
 
     - name: Publish archives and packages
       uses: softprops/action-gh-release@v1
-      if: steps.is-release.outputs.IS_RELEASE
+      #if: steps.is-release.outputs.IS_RELEASE
       with:
+        tag_name: ${{ env.TAG_NAME }}
         files: |
           ${{ steps.package.outputs.PKG_PATH }}
           ${{ steps.debian-package.outputs.DPKG_PATH }}
