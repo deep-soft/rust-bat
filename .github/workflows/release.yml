@@ -508,6 +508,7 @@ jobs:
       run: |
         unset IS_RELEASE ; if [[ $GITHUB_REF =~ ^refs/tags/v[0-9].* ]]; then IS_RELEASE='true' ; fi
         echo ::set-output name=IS_RELEASE::${IS_RELEASE}
+        echo "IS_RELEASE=${IS_RELEASE}" >> $GITHUB_OUTPUT
 
     - name: Publish archives and packages
       uses: softprops/action-gh-release@v1
