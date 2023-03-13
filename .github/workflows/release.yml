@@ -510,13 +510,32 @@ jobs:
         unset IS_RELEASE ; if [[ $GITHUB_REF =~ ^refs/tags/v[0-9].* ]]; then IS_RELEASE='true' ; fi
         #echo ::set-output name=IS_RELEASE::${IS_RELEASE}
         echo "IS_RELEASE=${IS_RELEASE}" >> $GITHUB_OUTPUT
+        echo "IS_RELEASE=${IS_RELEASE}"
 
-    - name: Publish archives and packages
-      uses: softprops/action-gh-release@v1
-      if: steps.is-release.outputs.IS_RELEASE
+    - name: Check for release 2
+      id: is-release2
+      shell: bash
+      run: |
+        unset IS_RELEASE ; if [[ $GITHUB_REF =~ ^refs/tags/v* ]]; then IS_RELEASE='true' ; fi
+        #echo ::set-output name=IS_RELEASE::${IS_RELEASE}
+        echo "IS_RELEASE=${IS_RELEASE}" >> $GITHUB_OUTPUT
+        echo "IS_RELEASE=${IS_RELEASE}"
+
+#    - name: Publish archives and packages
+#      uses: softprops/action-gh-release@v1
+#      if: steps.is-release.outputs.IS_RELEASE
+#      with:
+#        files: |
+#          ${{ steps.package.outputs.PKG_PATH }}
+#          ${{ steps.debian-package.outputs.DPKG_PATH }}
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Publish Release
+      uses: deep-soft/action-gh-release@v1
       with:
+        #draft: true
+        tag_name: ${{ env.TAG_NAME }}
         files: |
           ${{ steps.package.outputs.PKG_PATH }}
           ${{ steps.debian-package.outputs.DPKG_PATH }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
