@@ -27,10 +27,13 @@
 - Associate `pdm.lock` with `TOML` syntax, see #2410
 - `Todo.txt`: Fix highlighting of contexts and projects at beginning of done.txt, see #2411
 - `cmd-help`: overhaul scope names (colors) to improve theme support; misc syntax improvements. See #2419 (@victor-gp)
+- Added support for Crontab, see #2509 (@keith-hall)
 
 ## Themes
 
 ## `bat` as a library
+
+- `PrettyPrinter::header` correctly displays a header with the filename, see #2378 and #2406 (@cstyles)
 
 
 # v0.22.1
