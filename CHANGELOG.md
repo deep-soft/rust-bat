@@ -2,6 +2,24 @@
 
 ## Features
 
+## Bugfixes
+
+## Other
+
+- Output directory for generated assets (completion, manual) can be customized, see #2515 (@tranzystorek-io)
+
+## Syntaxes
+
+## Themes
+
+## `bat` as a library
+
+
+
+# v0.23.0
+
+## Features
+
 - Implemented `-S` and `--chop-long-lines` flags as aliases for `--wrap=never`. See #2309 (@johnmatthiggins)
 - Breaking change: Environment variables can now override config file settings (but command-line arguments still have the highest precedence), see #1152, #1281, and #2381 (@aaronkollasch)
 - Implemented `--nonprintable-notation=caret` to support showing non-printable characters using caret notation. See #2429 (@einfachIrgendwer0815)
