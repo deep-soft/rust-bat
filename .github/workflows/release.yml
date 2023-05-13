@@ -1,4 +1,4 @@
-# 2023-05-13 16:10
+# 2023-05-13 16:20
 name: Release
 
 env:
@@ -458,7 +458,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ env.TAG_NAME }}-${{ env.PROG_VERSION }}
+        tag_name: ${{ env.TAG_NAME }}-v${{ env.PROG_VERSION }}
         files: |
           ${{ steps.package.outputs.PKG_PATH }}
           ${{ steps.debian-package.outputs.DPKG_PATH }}
