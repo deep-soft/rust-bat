@@ -2,11 +2,17 @@
 
 ## Features
 
+- Add environment variable `BAT_PAGING`, see #2629 (@einfachIrgendwer0815)
+- Add support for `LESSOPEN` and `LESSCLOSE`. See #1597, #1739, #2444, #2602, and #2662 (@Anomalocaridid)
+
 ## Bugfixes
+
+- Fix `more` not being found on Windows when provided via `BAT_PAGER`, see #2570, #2580, and #2651 (@mataha)
 
 ## Other
 
 - Output directory for generated assets (completion, manual) can be customized, see #2515 (@tranzystorek-io)
+- Bump MSRV to 1.70, see #2651 (@mataha)
 
 ## Syntaxes
 
@@ -14,6 +20,7 @@
 - Associate `Containerfile` with `Dockerfile` syntax, see #2606 (@einfachIrgendwer0815)
 - Replaced quotes with double quotes so fzf integration example script works on windows and linux. see #2095 (@johnmatthiggins)
 - Associate `ksh` files with `bash` syntax, see #2633 (@johnmatthiggins)
+- Associate `ron` files with `rust` syntax, see #2427 (@YeungOnion)
 
 ## Themes
 

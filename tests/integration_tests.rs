@@ -34,6 +34,14 @@ use utils::mocked_pagers;
 
 const EXAMPLES_DIR: &str = "tests/examples";
 
+fn get_config() -> &'static str {
+    if cfg!(windows) {
+        "bat-windows.conf"
+    } else {
+        "bat.conf"
+    }
+}
+
 #[test]
 fn basic() {
     bat()
@@ -589,37 +597,49 @@ fn do_not_exit_directory() {
 }
 
 #[test]
+#[serial]
 fn pager_basic() {
-    bat()
-        .env("PAGER", "echo pager-output")
-        .arg("--paging=always")
-        .arg("test.txt")
-        .assert()
-        .success()
-        .stdout(predicate::eq("pager-output\n").normalize());
+    mocked_pagers::with_mocked_versions_of_more_and_most_in_path(|| {
+        bat()
+            .env("PAGER", mocked_pagers::from("echo pager-output"))
+            .arg("--paging=always")
+            .arg("test.txt")
+            .assert()
+            .success()
+            .stdout(predicate::str::contains("pager-output\n").normalize());
+    });
 }
 
 #[test]
+#[serial]
 fn pager_basic_arg() {
-    bat()
-        .arg("--pager=echo pager-output")
-        .arg("--paging=always")
-        .arg("test.txt")
-        .assert()
-        .success()
-        .stdout(predicate::eq("pager-output\n").normalize());
+    mocked_pagers::with_mocked_versions_of_more_and_most_in_path(|| {
+        bat()
+            .arg(format!(
+                "--pager={}",
+                mocked_pagers::from("echo pager-output")
+            ))
+            .arg("--paging=always")
+            .arg("test.txt")
+            .assert()
+            .success()
+            .stdout(predicate::str::contains("pager-output\n").normalize());
+    });
 }
 
 #[test]
+#[serial]
 fn pager_overwrite() {
-    bat()
-        .env("PAGER", "echo other-pager")
-        .env("BAT_PAGER", "echo pager-output")
-        .arg("--paging=always")
-        .arg("test.txt")
-        .assert()
-        .success()
-        .stdout(predicate::eq("pager-output\n").normalize());
+    mocked_pagers::with_mocked_versions_of_more_and_most_in_path(|| {
+        bat()
+            .env("PAGER", mocked_pagers::from("echo other-pager"))
+            .env("BAT_PAGER", mocked_pagers::from("echo pager-output"))
+            .arg("--paging=always")
+            .arg("test.txt")
+            .assert()
+            .success()
+            .stdout(predicate::str::contains("pager-output\n").normalize());
+    });
 }
 
 #[test]
@@ -635,55 +655,73 @@ fn pager_disable() {
 }
 
 #[test]
+#[serial]
 fn pager_arg_override_env_withconfig() {
-    bat_with_config()
-        .env("BAT_CONFIG_PATH", "bat.conf")
-        .env("PAGER", "echo another-pager")
-        .env("BAT_PAGER", "echo other-pager")
-        .arg("--pager=echo pager-output")
-        .arg("--paging=always")
-        .arg("test.txt")
-        .assert()
-        .success()
-        .stdout(predicate::eq("pager-output\n").normalize());
+    mocked_pagers::with_mocked_versions_of_more_and_most_in_path(|| {
+        bat_with_config()
+            .env("BAT_CONFIG_PATH", get_config())
+            .env("PAGER", mocked_pagers::from("echo another-pager"))
+            .env("BAT_PAGER", mocked_pagers::from("echo other-pager"))
+            .arg(format!(
+                "--pager={}",
+                mocked_pagers::from("echo pager-output")
+            ))
+            .arg("--paging=always")
+            .arg("test.txt")
+            .assert()
+            .success()
+            .stdout(predicate::str::contains("pager-output\n").normalize());
+    });
 }
 
 #[test]
+#[serial]
 fn pager_arg_override_env_noconfig() {
-    bat()
-        .env("PAGER", "echo another-pager")
-        .env("BAT_PAGER", "echo other-pager")
-        .arg("--pager=echo pager-output")
-        .arg("--paging=always")
-        .arg("test.txt")
-        .assert()
-        .success()
-        .stdout(predicate::eq("pager-output\n").normalize());
+    mocked_pagers::with_mocked_versions_of_more_and_most_in_path(|| {
+        bat()
+            .env("PAGER", mocked_pagers::from("echo another-pager"))
+            .env("BAT_PAGER", mocked_pagers::from("echo other-pager"))
+            .arg(format!(
+                "--pager={}",
+                mocked_pagers::from("echo pager-output")
+            ))
+            .arg("--paging=always")
+            .arg("test.txt")
+            .assert()
+            .success()
+            .stdout(predicate::str::contains("pager-output\n").normalize());
+    });
 }
 
 #[test]
+#[serial]
 fn pager_env_bat_pager_override_config() {
-    bat_with_config()
-        .env("BAT_CONFIG_PATH", "bat.conf")
-        .env("PAGER", "echo other-pager")
-        .env("BAT_PAGER", "echo pager-output")
-        .arg("--paging=always")
-        .arg("test.txt")
-        .assert()
-        .success()
-        .stdout(predicate::eq("pager-output\n").normalize());
+    mocked_pagers::with_mocked_versions_of_more_and_most_in_path(|| {
+        bat_with_config()
+            .env("BAT_CONFIG_PATH", get_config())
+            .env("PAGER", mocked_pagers::from("echo other-pager"))
+            .env("BAT_PAGER", mocked_pagers::from("echo pager-output"))
+            .arg("--paging=always")
+            .arg("test.txt")
+            .assert()
+            .success()
+            .stdout(predicate::str::contains("pager-output\n").normalize());
+    });
 }
 
 #[test]
+#[serial]
 fn pager_env_pager_nooverride_config() {
-    bat_with_config()
-        .env("BAT_CONFIG_PATH", "bat.conf")
-        .env("PAGER", "echo other-pager")
-        .arg("--paging=always")
-        .arg("test.txt")
-        .assert()
-        .success()
-        .stdout(predicate::eq("dummy-pager-from-config\n").normalize());
+    mocked_pagers::with_mocked_versions_of_more_and_most_in_path(|| {
+        bat_with_config()
+            .env("BAT_CONFIG_PATH", get_config())
+            .env("PAGER", mocked_pagers::from("echo other-pager"))
+            .arg("--paging=always")
+            .arg("test.txt")
+            .assert()
+            .success()
+            .stdout(predicate::str::contains("dummy-pager-from-config\n").normalize());
+    });
 }
 
 #[test]
@@ -809,15 +847,18 @@ fn alias_pager_disable() {
 }
 
 #[test]
+#[serial]
 fn alias_pager_disable_long_overrides_short() {
-    bat()
-        .env("PAGER", "echo pager-output")
-        .arg("-P")
-        .arg("--paging=always")
-        .arg("test.txt")
-        .assert()
-        .success()
-        .stdout(predicate::eq("pager-output\n").normalize());
+    mocked_pagers::with_mocked_versions_of_more_and_most_in_path(|| {
+        bat()
+            .env("PAGER", mocked_pagers::from("echo pager-output"))
+            .arg("-P")
+            .arg("--paging=always")
+            .arg("test.txt")
+            .assert()
+            .success()
+            .stdout(predicate::str::contains("pager-output\n").normalize());
+    });
 }
 
 #[test]
@@ -841,6 +882,20 @@ fn pager_failed_to_parse() {
         .assert()
         .failure()
         .stderr(predicate::str::contains("Could not parse pager command"));
+}
+
+#[test]
+#[serial]
+fn env_var_bat_paging() {
+    mocked_pagers::with_mocked_versions_of_more_and_most_in_path(|| {
+        bat()
+            .env("BAT_PAGER", mocked_pagers::from("echo pager-output"))
+            .env("BAT_PAGING", "always")
+            .arg("test.txt")
+            .assert()
+            .success()
+            .stdout(predicate::str::contains("pager-output\n").normalize());
+    });
 }
 
 #[test]
@@ -901,13 +956,16 @@ fn config_location_from_bat_config_dir_variable() {
 }
 
 #[test]
+#[serial]
 fn config_read_arguments_from_file() {
-    bat_with_config()
-        .env("BAT_CONFIG_PATH", "bat.conf")
-        .arg("test.txt")
-        .assert()
-        .success()
-        .stdout(predicate::eq("dummy-pager-from-config\n").normalize());
+    mocked_pagers::with_mocked_versions_of_more_and_most_in_path(|| {
+        bat_with_config()
+            .env("BAT_CONFIG_PATH", get_config())
+            .arg("test.txt")
+            .assert()
+            .success()
+            .stdout(predicate::str::contains("dummy-pager-from-config\n").normalize());
+    });
 }
 
 #[cfg(unix)]
@@ -2013,4 +2071,281 @@ fn acknowledgements() {
             .and(predicate::str::contains("Copyright 2014 Clams")),
         )
         .stderr("");
+}
+
+#[cfg(unix)] // Expected output assumed that tests are run on a Unix-like system
+#[cfg(feature = "lessopen")]
+#[test]
+fn lessopen_file_piped() {
+    bat()
+        .env("LESSOPEN", "|echo File is %s")
+        .arg("--lessopen")
+        .arg("test.txt")
+        .assert()
+        .success()
+        .stdout("File is test.txt\n");
+}
+
+#[cfg(unix)] // Expected output assumed that tests are run on a Unix-like system
+#[cfg(feature = "lessopen")]
+#[test]
+fn lessopen_stdin_piped() {
+    bat()
+        .env("LESSOPEN", "|cat")
+        .arg("--lessopen")
+        .write_stdin("hello world\n")
+        .assert()
+        .success()
+        .stdout("hello world\n");
+}
+
+#[cfg(unix)] // Expected output assumed that tests are run on a Unix-like system
+#[cfg(feature = "lessopen")]
+#[test]
+#[serial] // Randomly fails otherwise
+fn lessopen_and_lessclose_file_temp() {
+    // This is mainly to test that $LESSCLOSE gets passed the correct file paths
+    // In this case, the original file and the temporary file returned by $LESSOPEN
+    bat()
+        // Need a %s for $LESSOPEN to be valid
+        .env("LESSOPEN", "echo empty.txt && echo %s >/dev/null")
+        .env("LESSCLOSE", "echo lessclose: %s %s")
+        .arg("--lessopen")
+        .arg("test.txt")
+        .assert()
+        .success()
+        .stdout("lessclose: test.txt empty.txt\n");
+}
+
+#[cfg(unix)] // Expected output assumed that tests are run on a Unix-like system
+#[cfg(feature = "lessopen")]
+#[test]
+#[serial] // Randomly fails otherwise
+fn lessopen_and_lessclose_file_piped() {
+    // This is mainly to test that $LESSCLOSE gets passed the correct file paths
+    // In these cases, the original file and a dash
+    bat()
+        // This test will not work properly if $LESSOPEN does not output anything
+        .env("LESSOPEN", "|cat %s")
+        .env("LESSCLOSE", "echo lessclose: %s %s")
+        .arg("--lessopen")
+        .arg("test.txt")
+        .assert()
+        .success()
+        .stdout("hello world\nlessclose: test.txt -\n");
+
+    bat()
+        .env("LESSOPEN", "||cat %s")
+        .env("LESSCLOSE", "echo lessclose: %s %s")
+        .arg("--lessopen")
+        .arg("empty.txt")
+        .assert()
+        .success()
+        .stdout("lessclose: empty.txt -\n");
+}
+
+#[cfg(unix)] // Expected output assumed that tests are run on a Unix-like system
+#[cfg(feature = "lessopen")]
+#[test]
+#[serial] // Randomly fails otherwise
+#[ignore = "randomly failing on some systems"]
+fn lessopen_and_lessclose_stdin_temp() {
+    // This is mainly to test that $LESSCLOSE gets passed the correct file paths
+    // In this case, a dash and the temporary file returned by $LESSOPEN
+    bat()
+        // Need a %s for $LESSOPEN to be valid
+        .env("LESSOPEN", "-echo empty.txt && echo %s >/dev/null")
+        .env("LESSCLOSE", "echo lessclose: %s %s")
+        .arg("--lessopen")
+        .write_stdin("test.txt")
+        .assert()
+        .success()
+        .stdout("lessclose: - empty.txt\n");
+}
+
+#[cfg(unix)] // Expected output assumed that tests are run on a Unix-like system
+#[cfg(feature = "lessopen")]
+#[test]
+#[serial] // Randomly fails otherwise
+fn lessopen_and_lessclose_stdin_piped() {
+    // This is mainly to test that $LESSCLOSE gets passed the correct file paths
+    // In these cases, two dashes
+    bat()
+        // This test will not work properly if $LESSOPEN does not output anything
+        // Need a %s for $LESSOPEN to be valid
+        .env("LESSOPEN", "|-cat test.txt && echo %s >/dev/null")
+        .env("LESSCLOSE", "echo lessclose: %s %s")
+        .arg("--lessopen")
+        .write_stdin("empty.txt")
+        .assert()
+        .success()
+        .stdout("hello world\nlessclose: - -\n");
+
+    bat()
+        // Need a %s for $LESSOPEN to be valid
+        .env("LESSOPEN", "||-cat empty.txt && echo %s >/dev/null")
+        .env("LESSCLOSE", "echo lessclose: %s %s")
+        .arg("--lessopen")
+        .write_stdin("empty.txt")
+        .assert()
+        .success()
+        .stdout("lessclose: - -\n");
+}
+
+#[cfg(unix)] // Expected output assumed that tests are run on a Unix-like system
+#[cfg(feature = "lessopen")]
+#[test]
+fn lessopen_handling_empty_output_file() {
+    bat()
+        // Need a %s for $LESSOPEN to be valid
+        .env("LESSOPEN", "|cat empty.txt && echo %s >/dev/null")
+        .arg("--lessopen")
+        .arg("test.txt")
+        .assert()
+        .success()
+        .stdout("hello world\n");
+
+    bat()
+        // Need a %s for $LESSOPEN to be valid
+        .env("LESSOPEN", "|cat nonexistent.txt && echo %s >/dev/null")
+        .arg("--lessopen")
+        .arg("test.txt")
+        .assert()
+        .success()
+        .stdout("hello world\n");
+
+    bat()
+        // Need a %s for $LESSOPEN to be valid
+        .env("LESSOPEN", "||cat empty.txt && echo %s >/dev/null")
+        .arg("--lessopen")
+        .arg("test.txt")
+        .assert()
+        .success()
+        .stdout("");
+
+    bat()
+        // Need a %s for $LESSOPEN to be valid
+        .env("LESSOPEN", "||cat nonexistent.txt && echo %s >/dev/null")
+        .arg("--lessopen")
+        .arg("test.txt")
+        .assert()
+        .success()
+        .stdout("hello world\n");
+}
+
+#[cfg(unix)] // Expected output assumed that tests are run on a Unix-like system
+#[cfg(feature = "lessopen")]
+#[test]
+// FIXME
+fn lessopen_handling_empty_output_stdin() {
+    bat()
+        // Need a %s for $LESSOPEN to be valid
+        .env("LESSOPEN", "|-cat empty.txt && echo %s >/dev/null")
+        .arg("--lessopen")
+        .write_stdin("hello world\n")
+        .assert()
+        .success()
+        .stdout("hello world\n");
+
+    bat()
+        // Need a %s for $LESSOPEN to be valid
+        .env("LESSOPEN", "|-cat nonexistent.txt && echo %s >/dev/null")
+        .arg("--lessopen")
+        .write_stdin("hello world\n")
+        .assert()
+        .success()
+        .stdout("hello world\n");
+
+    bat()
+        // Need a %s for $LESSOPEN to be valid
+        .env("LESSOPEN", "||-cat empty.txt && echo %s >/dev/null")
+        .arg("--lessopen")
+        .write_stdin("hello world\n")
+        .assert()
+        .success()
+        .stdout("");
+
+    bat()
+        // Need a %s for $LESSOPEN to be valid
+        .env("LESSOPEN", "||-cat nonexistent.txt && echo %s >/dev/null")
+        .arg("--lessopen")
+        .write_stdin("hello world\n")
+        .assert()
+        .success()
+        .stdout("hello world\n");
+}
+
+#[cfg(unix)] // Expected output assumed that tests are run on a Unix-like system
+#[cfg(feature = "lessopen")]
+#[test]
+fn lessopen_uses_shell() {
+    bat()
+        .env("LESSOPEN", "|cat < %s")
+        .arg("--lessopen")
+        .arg("test.txt")
+        .assert()
+        .success()
+        .stdout("hello world\n");
+}
+
+#[cfg(unix)]
+#[cfg(feature = "lessopen")]
+#[test]
+fn do_not_use_lessopen_by_default() {
+    bat()
+        .env("LESSOPEN", "|echo File is %s")
+        .arg("test.txt")
+        .assert()
+        .success()
+        .stdout("hello world\n");
+}
+
+#[cfg(unix)]
+#[cfg(feature = "lessopen")]
+#[test]
+fn do_not_use_lessopen_if_overridden() {
+    bat()
+        .env("LESSOPEN", "|echo File is %s")
+        .arg("--lessopen")
+        .arg("--no-lessopen")
+        .arg("test.txt")
+        .assert()
+        .success()
+        .stdout("hello world\n");
+}
+
+#[cfg(unix)]
+#[cfg(feature = "lessopen")]
+#[test]
+fn lessopen_validity() {
+    bat()
+        .env("LESSOPEN", "|echo File is test.txt")
+        .arg("--lessopen")
+        .arg("test.txt")
+        .assert()
+        .success()
+        .stdout("hello world\n")
+        .stderr(
+            "\u{1b}[33m[bat warning]\u{1b}[0m: LESSOPEN ignored: must contain exactly one %s\n",
+        );
+
+    bat()
+        .env("LESSOPEN", "|echo File is %s")
+        .arg("--lessopen")
+        .arg("test.txt")
+        .assert()
+        .success()
+        .stdout("File is test.txt\n")
+        .stderr("");
+
+    bat()
+        .env("LESSOPEN", "|echo %s is %s")
+        .arg("--lessopen")
+        .arg("test.txt")
+        .assert()
+        .success()
+        .stdout("hello world\n")
+        .stderr(
+            "\u{1b}[33m[bat warning]\u{1b}[0m: LESSOPEN ignored: must contain exactly one %s\n",
+        );
 }
