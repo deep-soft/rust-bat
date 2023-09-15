@@ -874,6 +874,42 @@ fn disable_pager_if_disable_paging_flag_comes_after_paging() {
 }
 
 #[test]
+fn disable_pager_if_pp_flag_comes_after_paging() {
+    bat()
+        .env("PAGER", "echo pager-output")
+        .arg("--paging=always")
+        .arg("-pp")
+        .arg("test.txt")
+        .assert()
+        .success()
+        .stdout(predicate::eq("hello world\n").normalize());
+}
+
+#[test]
+fn enable_pager_if_disable_paging_flag_comes_before_paging() {
+    bat()
+        .env("PAGER", "echo pager-output")
+        .arg("-P")
+        .arg("--paging=always")
+        .arg("test.txt")
+        .assert()
+        .success()
+        .stdout(predicate::eq("pager-output\n").normalize());
+}
+
+#[test]
+fn enable_pager_if_pp_flag_comes_before_paging() {
+    bat()
+        .env("PAGER", "echo pager-output")
+        .arg("-pp")
+        .arg("--paging=always")
+        .arg("test.txt")
+        .assert()
+        .success()
+        .stdout(predicate::eq("pager-output\n").normalize());
+}
+
+#[test]
 fn pager_failed_to_parse() {
     bat()
         .env("BAT_PAGER", "mismatched-quotes 'a")
@@ -2348,4 +2384,28 @@ fn lessopen_validity() {
         .stderr(
             "\u{1b}[33m[bat warning]\u{1b}[0m: LESSOPEN ignored: must contain exactly one %s\n",
         );
+}
+
+// Regression test for issue #2520 and PR #2650
+// Syntax highlighting should be the same regardless of
+// --map-syntax' case or file extension's case
+#[test]
+fn highlighting_independant_from_map_syntax_case() {
+    let expected = bat()
+        .arg("-f")
+        .arg("--map-syntax=*.config:JSON")
+        .arg("map-syntax_case.Config")
+        .assert()
+        .get_output()
+        .stdout
+        .clone();
+
+    bat()
+        .arg("-f")
+        .arg("--map-syntax=*.Config:JSON")
+        .arg("map-syntax_case.Config")
+        .assert()
+        .success()
+        .stdout(expected)
+        .stderr("");
 }
