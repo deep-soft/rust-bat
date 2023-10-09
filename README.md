@@ -32,6 +32,16 @@ A special *thank you* goes to our biggest <a href="doc/sponsors.md">sponsors</a>
   <sup>Add Single Sign-On (and more) in minutes instead of months.</sup>
 </a>
 
+<a href="https://www.warp.dev/?utm_source=github&utm_medium=referral&utm_campaign=bat_20231001">
+  <img src="doc/sponsors/warp-logo.png" width="200" alt="Warp">
+  <br>
+  <strong>Warp is a modern, Rust-based terminal with AI built in<br>so you and your team can build great software, faster.</strong>
+  <br>
+  <sub>Feel more productive on the command line with parameterized commands,</sub>
+  <br>
+  <sup>autosuggestions, and an IDE-like text editor.</sup>
+</a>
+
 ### Syntax highlighting
 
 `bat` supports syntax highlighting for a large number of programming and markup
@@ -406,7 +416,7 @@ You will need to install the [Visual C++ Redistributable](https://support.micros
 You can install `bat` via [WinGet](https://learn.microsoft.com/en-us/windows/package-manager/winget):
 
 ```bash
-winget install --id=sharkdp.bat -e
+winget install sharkdp.bat
 ```
 
 #### With Chocolatey
@@ -421,13 +431,6 @@ choco install bat
 You can install `bat` via [scoop](https://scoop.sh/):
 ```bash
 scoop install bat
-```
-
-#### With Winget
-
-You can install `bat` via [Winget](https://learn.microsoft.com/en-us/windows/package-manager/):
-```bash
-winget install sharkdp.bat
 ```
 
 #### From prebuilt binaries:
