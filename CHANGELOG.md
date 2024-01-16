@@ -15,8 +15,14 @@
 - Minor benchmark script improvements #2768 (@cyqsimon)
 - Update Arch Linux package URL in README files #2779 (@brunobell)
 - Update and improve `zsh` completion, see #2772 (@okapia)
+- Use proper Architecture for Debian packages built for musl, see #2811 (@Enselic)
+- Pull in fix for unsafe-libyaml security advisory, see #2812 (@dtolnay)
+- Update git-version dependency to use Syn v2, see #2816 (@dtolnay)
 
 ## Syntaxes
+
+- `cmd-help`: scope subcommands followed by other terms, and other misc improvements, see #2819 (@victor-gp)
+- Upgrade JQ syntax, see #2820 (@dependabot[bot])
 
 ## Themes
 
