@@ -265,7 +265,7 @@ impl<'a> InteractivePrinter<'a> {
             .content_type
             .map_or(false, |c| c.is_binary() && !config.show_nonprintable);
 
-        let highlighter_from_set = if is_printing_binary || config.colored_output == false {
+        let highlighter_from_set = if is_printing_binary || !config.colored_output {
             None
         } else {
             // Determine the type of syntax for highlighting
@@ -398,7 +398,7 @@ impl<'a> InteractivePrinter<'a> {
         // skip syntax highlighting on long lines
         let too_long = line.len() > 1024 * 16;
 
-        let for_highlighting: &str = if too_long { "\n" } else { &line };
+        let for_highlighting: &str = if too_long { "\n" } else { line };
 
         let mut highlighted_line = highlighter_from_set
             .highlighter
