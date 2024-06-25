@@ -373,6 +373,14 @@ You can install `bat` using the [nix package manager](https://nixos.org/nix):
 nix-env -i bat
 ```
 
+### Via flox
+
+You can install `bat` using [Flox](https://flox.dev)
+
+```bash
+flox install bat
+```
+
 ### On openSUSE
 
 You can install `bat` with zypper:
@@ -759,8 +767,13 @@ bat() {
 
 If an input file contains color codes or other ANSI escape sequences or control characters, `bat` will have problems
 performing syntax highlighting and text wrapping, and thus the output can become garbled.
-When displaying such files it is recommended to disable both syntax highlighting and wrapping by
+
+If your version of `bat` supports the `--strip-ansi=auto` option, it can be used to remove such sequences
+before syntax highlighting. Alternatively, you may disable both syntax highlighting and wrapping by
 passing the `--color=never --wrap=never` options to `bat`.
+
+> [!NOTE]
+> The `auto` option of `--strip-ansi` avoids removing escape sequences when the syntax is plain text.
 
 ### Terminals & colors
 
