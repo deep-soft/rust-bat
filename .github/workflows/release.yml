@@ -184,7 +184,7 @@ jobs:
         rustc -V
 
     - name: Read toml package.version
-      uses: deep-soft/toml-action@v1.0.2
+      uses: deep-soft/toml-action@v1
       id: read_toml
       with:
         file: 'Cargo.toml'
