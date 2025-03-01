@@ -3,6 +3,8 @@
 mod app;
 mod assets;
 mod clap_app;
+#[cfg(feature = "application")]
+mod completions;
 mod config;
 mod directories;
 mod input;
@@ -208,7 +210,7 @@ pub fn list_themes(
 
     let default_theme_name = default_theme(color_scheme(detect_color_scheme).unwrap_or_default());
     for theme in assets.themes() {
-        let default_theme_info = if !config.loop_through && default_theme_name == theme {
+        let default_theme_info = if default_theme_name == theme {
             " (default)"
         } else if default_theme(ColorScheme::Dark) == theme {
             " (default dark)"
@@ -229,6 +231,8 @@ pub fn list_themes(
                 .run(vec![theme_preview_file()], None)
                 .ok();
             writeln!(stdout)?;
+        } else if config.loop_through {
+            writeln!(stdout, "{theme}")?;
         } else {
             writeln!(stdout, "{theme}{default_theme_info}")?;
         }
@@ -344,6 +348,18 @@ fn run() -> Result<bool> {
         invoke_bugreport(&app, cache_dir);
         #[cfg(not(feature = "bugreport"))]
         println!("bat has been built without the 'bugreport' feature. The '--diagnostic' option is not available.");
+        return Ok(true);
+    }
+
+    #[cfg(feature = "application")]
+    if let Some(shell) = app.matches.get_one::<String>("completion") {
+        match shell.as_str() {
+            "bash" => println!("{}", completions::BASH_COMPLETION),
+            "fish" => println!("{}", completions::FISH_COMPLETION),
+            "ps1" => println!("{}", completions::PS1_COMPLETION),
+            "zsh" => println!("{}", completions::ZSH_COMPLETION),
+            _ => unreachable!("No completion for shell '{}' available.", shell),
+        }
         return Ok(true);
     }
 
